@@ -16,6 +16,8 @@ firebase.initializeApp(config);
 
 // Get a reference to the database service
 var database = firebase.database();
+// 1 day in milliseconds
+const ONE_DAY = 1000 * 60 * 60 * 24
 
 
 class App extends Component {
@@ -24,10 +26,20 @@ class App extends Component {
     this.state = {
       dateStart: new Date(),
       dateEnd: new Date(),
+      allTimeGameTime: 0,
+      rangeGameTime: 0,
       games: []
     };
+    this.CalculateAllTimeTime = this.CalculateAllTimeTime.bind(this);
+    this.CalculateRangeTime = this.CalculateRangeTime.bind(this);
     this.CalculateAllTimeGameTime = this.CalculateAllTimeGameTime.bind(this);
     this.CalculateRangeGameTime = this.CalculateRangeGameTime.bind(this);
+    this.CalculateRangeNumberOfGames = this.CalculateRangeNumberOfGames.bind(this);
+
+    this.GetNumberOfDays = this.GetNumberOfDays.bind(this);
+    this.GetNumberOfDaysInRange = this.GetNumberOfDaysInRange.bind(this);
+    this.GetNumberOfDaysAllTime = this.GetNumberOfDaysAllTime.bind(this);
+    this.TransformTwoDigits = this.TransformTwoDigits.bind(this);
   }
 
   componentDidMount() {
@@ -55,7 +67,6 @@ class App extends Component {
       //console.log(gametimes[time]);
       totalMinutes += gametimes[time].Value.NbMinutes;
     }
-
     return totalMinutes;
   }
 
@@ -67,8 +78,66 @@ class App extends Component {
         totalMinutes += gametimes[time].Value.NbMinutes;
       }
     }
-
     return totalMinutes;
+  }
+
+  CalculateAllTimeTime() {
+    var totalMinutes = 0;
+    for (let gameIndex in this.state.games) {
+      var game = this.state.games[gameIndex];
+      for (let timeIndex in game.gametimes) {
+        var time = game.gametimes[timeIndex];
+        totalMinutes += time.Value.NbMinutes;
+      }
+    }
+    return totalMinutes;
+  }
+
+  CalculateRangeTime() {
+    var totalMinutes = 0;
+    for (let gameIndex in this.state.games) {
+      var game = this.state.games[gameIndex];
+      for (let timeIndex in game.gametimes) {
+        var time = game.gametimes[timeIndex];
+        var date = new Date(time.Key);
+        if (date >= this.state.dateStart && date <= this.state.dateEnd) {
+          totalMinutes += time.Value.NbMinutes;
+        }
+      }
+    }
+    return totalMinutes;
+  }
+
+  CalculateRangeNumberOfGames() {
+    var numberOfGame = 0;
+    for (let gameIndex in this.state.games) {
+      var game = this.state.games[gameIndex];
+      for (let timeIndex in game.gametimes) {
+        var time = game.gametimes[timeIndex];
+        var date = new Date(time.Key);
+        if (date >= this.state.dateStart && date <= this.state.dateEnd) {
+          numberOfGame += 1;
+          break;
+        }
+      }
+    }
+    return numberOfGame;
+  }
+
+  GetNumberOfDays(datestart, dateend) {
+    return Math.floor((dateend.getTime() - datestart.getTime()) / ONE_DAY);
+  }
+
+  GetNumberOfDaysInRange() {
+    return this.GetNumberOfDays(this.state.dateStart, this.state.dateEnd);
+  }
+
+  GetNumberOfDaysAllTime() {
+    return this.GetNumberOfDays(new Date(2013, 6, 10), new Date());
+  }
+
+  TransformTwoDigits(number) {
+    return parseFloat(Math.round(number * 100) / 100).toFixed(2);
   }
 
   dateStartOnChange = dateStart => this.setState({ dateStart })
@@ -84,16 +153,33 @@ class App extends Component {
 
         <section className='totalGameTime'>
           <div>
-            Range starts at:
-        <DatePicker
+            Range starts at:&nbsp;
+            <DatePicker
               onChange={this.dateStartOnChange}
               value={this.state.dateStart}
             />
-            Range ends at:
-        <DatePicker
+            &nbsp;
+            Range ends at:&nbsp;
+            <DatePicker
               onChange={this.dateEndOnChange}
               value={this.state.dateEnd}
             />
+            <br />
+            Number of days in the range:{this.GetNumberOfDaysInRange()}
+          </div>
+          <div>
+            Range total game time: {this.CalculateRangeTime()} minutes,&nbsp;
+            {this.TransformTwoDigits(this.CalculateRangeTime() / 60.0)} hours,&nbsp;
+            {this.TransformTwoDigits(this.CalculateRangeTime() / 60.0 / 24.0)} days.&nbsp;
+            {this.TransformTwoDigits(this.CalculateRangeTime() / 60.0 / this.GetNumberOfDaysInRange())} hours / day.&nbsp;
+            Time is split between {this.CalculateRangeNumberOfGames()} game(s).
+            <br />
+            All time game time: {this.CalculateAllTimeTime()} minutes,&nbsp;
+            {this.TransformTwoDigits(this.CalculateAllTimeTime() / 60.0)} hours,&nbsp;
+            {this.TransformTwoDigits(this.CalculateAllTimeTime() / 60.0 / 24.0)} days.&nbsp;
+            {this.TransformTwoDigits(this.CalculateAllTimeTime() / 60.0 / this.GetNumberOfDaysAllTime())} hours / day
+            <br/>
+            Time is split between {this.state.games.length} games.
           </div>
         </section>
 
@@ -106,7 +192,7 @@ class App extends Component {
               {this.state.games.map((game) => {
                 return (
                   <li key={game.id}>
-                    <h3>Game:{game.name}</h3>
+                    <h3>{game.name}</h3>
                     <p>Range total time: {this.CalculateRangeGameTime(game.gametimes)}</p>
                     <p>All time total time: {this.CalculateAllTimeGameTime(game.gametimes)}</p>
                   </li>
