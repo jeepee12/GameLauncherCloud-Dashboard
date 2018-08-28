@@ -9,3 +9,7 @@ firebase login
 firebase init
  -> configure and deploy
  -> folder:build
+ 
+// Other note:
+The project need to have its .env file setup with the firebase API-KEY.
+REACT_APP_GOOGLE_FIREBASE_API_KEY=XXXXXXXXX
