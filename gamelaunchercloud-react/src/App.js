@@ -39,6 +39,8 @@ class App extends Component {
     this.GetNumberOfDays = this.GetNumberOfDays.bind(this);
     this.GetNumberOfDaysInRange = this.GetNumberOfDaysInRange.bind(this);
     this.GetNumberOfDaysAllTime = this.GetNumberOfDaysAllTime.bind(this);
+    this.MinutesToExpandTimeText = this.MinutesToExpandTimeText.bind(this);
+    this.SortGamesByTime = this.SortGamesByTime.bind(this);
     this.TransformTwoDigits = this.TransformTwoDigits.bind(this);
   }
 
@@ -55,6 +57,7 @@ class App extends Component {
           gametimes: games[game].Gametimes
         });
       }
+      this.SortGamesByTime(newState)
       this.setState({
         games: newState
       });
@@ -136,14 +139,46 @@ class App extends Component {
     return this.GetNumberOfDays(new Date(2013, 6, 10), new Date());
   }
 
+  MinutesToExpandTimeText(NbMinutes) {
+    return NbMinutes + "Minutes. " + this.TransformTwoDigits(NbMinutes / 60)
+      + "Hours. " + this.TransformTwoDigits(NbMinutes / 60 / 24) + "Days.";
+  }
+
+  SortGamesByTime(games) {
+    games.sort((game1, game2) => {
+      var game1RangeTime = this.CalculateRangeGameTime(game1.gametimes);
+      var game2RangeTime = this.CalculateRangeGameTime(game2.gametimes);
+      // With want to sort from the highest to the lowest, so game2 - game1
+      if (game1RangeTime !== 0 || game2RangeTime !== 0) {
+        // console.log("Range")
+        return game2RangeTime - game1RangeTime;
+      }
+      else {
+        var game1AllTime = this.CalculateAllTimeGameTime(game1.gametimes);
+        var game2AllTime = this.CalculateAllTimeGameTime(game2.gametimes);
+        // console.log("alltime")
+        return game2AllTime - game1AllTime;
+      }
+    })
+    return games;
+  }
+
   TransformTwoDigits(number) {
     return parseFloat(Math.round(number * 100) / 100).toFixed(2);
   }
 
-  dateStartOnChange = dateStart => this.setState({ dateStart })
-  dateEndOnChange = dateEnd => this.setState({ dateEnd })
+  dateStartOnChange = dateStart => {
+    this.setState({ dateStart })
+    return dateStart;
+  }
+  dateEndOnChange = dateEnd => {
+    this.setState({ dateEnd })
+    return dateEnd;
+  }
 
   render() {
+    var sortedGames = this.SortGamesByTime(this.state.games);
+
     return (
       <div className="App">
         <header className="App-header">
@@ -178,8 +213,8 @@ class App extends Component {
             {this.TransformTwoDigits(this.CalculateAllTimeTime() / 60.0)} hours,&nbsp;
             {this.TransformTwoDigits(this.CalculateAllTimeTime() / 60.0 / 24.0)} days.&nbsp;
             {this.TransformTwoDigits(this.CalculateAllTimeTime() / 60.0 / this.GetNumberOfDaysAllTime())} hours / day
-            <br/>
-            Time is split between {this.state.games.length} games.
+            <br />
+            Time is split between {sortedGames.length} games.
           </div>
         </section>
 
@@ -189,12 +224,12 @@ class App extends Component {
         <section className='display-game'>
           <div className="wrapper">
             <ul>
-              {this.state.games.map((game) => {
+              {sortedGames.map((game) => {
                 return (
                   <li key={game.id}>
                     <h3>{game.name}</h3>
-                    <p>Range total time: {this.CalculateRangeGameTime(game.gametimes)}</p>
-                    <p>All time total time: {this.CalculateAllTimeGameTime(game.gametimes)}</p>
+                    <p>Range total time: {this.MinutesToExpandTimeText(this.CalculateRangeGameTime(game.gametimes))}</p>
+                    <p>All time total time: {this.MinutesToExpandTimeText(this.CalculateAllTimeGameTime(game.gametimes))}</p>
                   </li>
                 )
               })}
