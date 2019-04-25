@@ -209,7 +209,7 @@ class App extends Component {
             {this.TransformTwoDigits(this.CalculateRangeTime() / 60.0 / this.GetNumberOfDaysInRange())} hours / day.&nbsp;
             Time is split between {this.CalculateRangeNumberOfGames()} game(s).
             <br />
-            All time game time: {this.CalculateAllTimeTime()} minutes,&nbsp;
+            All time game time (June 10, 2013): {this.CalculateAllTimeTime()} minutes,&nbsp;
             {this.TransformTwoDigits(this.CalculateAllTimeTime() / 60.0)} hours,&nbsp;
             {this.TransformTwoDigits(this.CalculateAllTimeTime() / 60.0 / 24.0)} days.&nbsp;
             {this.TransformTwoDigits(this.CalculateAllTimeTime() / 60.0 / this.GetNumberOfDaysAllTime())} hours / day
