@@ -88,6 +88,12 @@ class App extends Component {
     var totalMinutes = 0;
     for (let gameIndex in this.state.games) {
       var game = this.state.games[gameIndex];
+      
+      // The App is running at the same time as the other steam vr games, so ignore...
+      if (game.name === "SteamVR"){
+        continue;
+      }
+
       for (let timeIndex in game.gametimes) {
         var time = game.gametimes[timeIndex];
         totalMinutes += time.Value.NbMinutes;
@@ -100,6 +106,12 @@ class App extends Component {
     var totalMinutes = 0;
     for (let gameIndex in this.state.games) {
       var game = this.state.games[gameIndex];
+
+      // The App is running at the same time as the other steam vr games, so ignore...
+      if (game.name === "SteamVR"){
+        continue;
+      }
+
       for (let timeIndex in game.gametimes) {
         var time = game.gametimes[timeIndex];
         var date = new Date(time.Key);
