@@ -180,11 +180,17 @@ class App extends Component {
   }
 
   dateStartOnChange = dateStart => {
-    this.setState({ dateStart })
+    if (dateStart)
+    {
+      this.setState({ dateStart })
+    }
     return dateStart;
   }
   dateEndOnChange = dateEnd => {
-    this.setState({ dateEnd })
+    if (dateEnd)
+    {
+      this.setState({ dateEnd })
+    }
     return dateEnd;
   }
 
