@@ -4,12 +4,12 @@
   "private": true,
   "dependencies": {
     "ajv": "^6.12.5",
-    "firebase": "^5.11.1",
-    "firebase-tools": "^8.10.0",
+    "firebase": "^9.6.11",
+    "firebase-tools": "^10.6.0",
     "react": "^16.13.1",
     "react-date-picker": "^6.13.0",
     "react-dom": "^16.13.1",
-    "react-scripts": "1.1.4"
+    "react-scripts": "^5.0.1"
   },
   "scripts": {
     "start": "react-scripts start",
