@@ -8,6 +8,7 @@ import DatePicker from 'react-date-picker';
 // Set the configuration for your app
 var config = {
   apiKey: process.env.REACT_APP_GOOGLE_FIREBASE_API_KEY,
+  projectId: "tritor-game-launcher",
   authDomain: "tritor-game-launcher.firebaseapp.com",
   databaseURL: "https://tritor-game-launcher.firebaseio.com/",
   storageBucket: "tritor-game-launcher.appspot.com"
