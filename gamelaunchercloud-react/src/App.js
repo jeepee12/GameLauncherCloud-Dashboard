@@ -1,23 +1,25 @@
 import React, { Component } from 'react';
 import logo from './logo.svg';
 import './App.css';
-import firebase from 'firebase';
+import { initializeApp } from 'firebase/app';
+import { getDatabase, ref, onValue } from "firebase/database";
 import DatePicker from 'react-date-picker';
 
 // Based on : https://firebase.google.com/docs/database/web/start?authuser=0
 // Set the configuration for your app
-var config = {
+const firebaseConfig = {
   apiKey: process.env.REACT_APP_GOOGLE_FIREBASE_API_KEY,
+  projectId: "tritor-game-launcher",
   authDomain: "tritor-game-launcher.firebaseapp.com",
   databaseURL: "https://tritor-game-launcher.firebaseio.com/",
   storageBucket: "tritor-game-launcher.appspot.com"
 };
-firebase.initializeApp(config);
+const app = initializeApp(firebaseConfig);
 
 // Get a reference to the database service
-var database = firebase.database();
+const database = getDatabase(app);
 // 1 day in milliseconds
-const ONE_DAY = 1000 * 60 * 60 * 24
+const ONE_DAY = 1000 * 60 * 60 * 24;
 
 
 class App extends Component {
@@ -45,8 +47,8 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const gamesRef = database.ref('Games');
-    gamesRef.on('value', (snapshot) => {
+    const gamesRef = ref(database, 'Games');
+    onValue(gamesRef, (snapshot) => {
       let games = snapshot.val();
       let newState = [];
       for (let game in games) {
