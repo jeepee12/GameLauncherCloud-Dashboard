@@ -110,7 +110,7 @@ class App extends Component {
       var game = this.state.games[gameIndex];
 
       // The App is running at the same time as the other steam vr games, so ignore...
-      if (game.name === "SteamVR"){
+      if (game.name === "SteamVR" || game.name === "fpsVR"){
         continue;
       }
 
